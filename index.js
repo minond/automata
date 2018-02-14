@@ -1,44 +1,76 @@
 class Dish {
   constructor(elem) {
-    this.SIZE = 600
+    var padding = 50
+    var size = 600
 
+    this.cells = []
+    this.board = {}
+    this.coors = {}
+
+    this.ctx = elem.getContext("2d")
     this.elem = elem
-    this.ctx = elem.getContext('2d')
-    this.elem.width = this.SIZE
-    this.elem.height = this.SIZE
+    this.elem.width = size
+    this.elem.height = size
 
+    this.coors.sx = padding
+    this.coors.ex = size - padding
+    this.coors.sy = 100
+    this.coors.ey = size - padding
+
+    this.board.cellSize = 10
+    this.board.rowWidth = (this.coors.ex - this.coors.sx) / this.board.cellSize
+    this.board.rowHeight = (this.coors.ey - this.coors.sy) / this.board.cellSize
+
+    this.populate()
+    this.tick()
+  }
+
+  tick() {
     this.reset()
+
+    for (var gen = 0, gens = this.cells.length; gen < gens; gen++) {
+      for (var i = 0; i < this.board.rowWidth; i++) {
+        if (this.get(gen, i).state === 1) {
+          var sx = this.coors.sx + this.board.cellSize * i
+          var sy = this.coors.sy + this.board.cellSize * gen
+          this.ctx.fillRect(sx, sy, this.board.cellSize, this.board.cellSize);
+        }
+      }
+    }
+  }
+
+  populate() {
+    var zero = this.board.rowWidth / 2 - 1
+    this.cells = [[]]
+    this.cells[0][zero] = { state: 1 }
+  }
+
+  get(generation, index) {
+    var gen = this.cells[generation] || []
+    return gen[index] || { state: 0 }
   }
 
   reset() {
-    var dim = 100
-    var padding = 50
-
-    var sx = padding
-    var ex = this.SIZE - padding
-    var sy = 200
-    var ey = this.SIZE - padding
-
     this.ctx.translate(0.5, 0.5)
-    this.ctx.strokeStyle = '#a5a5a5'
+    this.ctx.strokeStyle = "#a5a5a5"
 
-    this.ctx.moveTo(sx, sy)
-    this.ctx.lineTo(ex, sy)
-    this.ctx.lineTo(ex, ey)
-    this.ctx.lineTo(sx, ey)
-    this.ctx.lineTo(sx, sy)
+    this.ctx.moveTo(this.coors.sx, this.coors.sy)
+    this.ctx.lineTo(this.coors.ex, this.coors.sy)
+    this.ctx.lineTo(this.coors.ex, this.coors.ey)
+    this.ctx.lineTo(this.coors.sx, this.coors.ey)
+    this.ctx.lineTo(this.coors.sx, this.coors.sy)
 
-    for (var x = sx; x < ex; x += 10) {
-      for (var y = sy; y < ex; y += 10) {
+    for (var x = this.coors.sx; x < this.coors.ex; x += this.board.cellSize) {
+      for (var y = this.coors.sy; y < this.coors.ex; y += this.board.cellSize) {
         this.ctx.moveTo(x, y)
-        this.ctx.lineTo(x, ey)
+        this.ctx.lineTo(x, this.coors.ey)
         this.ctx.moveTo(x, y)
-        this.ctx.lineTo(ex, y)
+        this.ctx.lineTo(this.coors.ex, y)
       }
     }
 
-    this.ctx.stroke();
+    this.ctx.stroke()
   }
 }
 
-var r30 = new Dish(document.querySelector('#canvas'))
+var r30 = new Dish(document.querySelector("#canvas"))
