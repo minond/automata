@@ -3,6 +3,10 @@ class Dish {
     var padding = 50
     var size = 600
 
+    // Rule 30
+    this.fn = (x, y, z) =>
+      x ^ y | z
+
     this.cells = []
     this.board = {}
     this.coors = {}
@@ -22,10 +26,43 @@ class Dish {
     this.board.rowHeight = (this.coors.ey - this.coors.sy) / this.board.cellSize
 
     this.populate()
-    this.tick()
+
+    setInterval(() => {
+      this.draw()
+      this.tick()
+    }, 500)
   }
 
   tick() {
+    var curr = this.cells[this.cells.length - 1]
+    var next = []
+
+    for (var i = 1; i < this.board.rowWidth - 1; i++) {
+      var x = this.pick(curr, i - 1)
+      var y = this.pick(curr, i)
+      var z = this.pick(curr, i + 1)
+      next[i] = { state: this.fn(x.state, y.state, z.state) }
+    }
+
+    this.cells.push(next)
+  }
+
+  populate() {
+    var zero = this.board.rowWidth / 2 - 1
+    this.cells = [[]]
+    this.cells[0][zero] = { state: 1 }
+  }
+
+  pick(list, index) {
+    return list[index] || { state: 0 }
+  }
+
+  get(generation, index) {
+    var gen = this.cells[generation] || []
+    return this.pick(gen, index)
+  }
+
+  draw() {
     this.reset()
 
     for (var gen = 0, gens = this.cells.length; gen < gens; gen++) {
@@ -39,20 +76,11 @@ class Dish {
     }
   }
 
-  populate() {
-    var zero = this.board.rowWidth / 2 - 1
-    this.cells = [[]]
-    this.cells[0][zero] = { state: 1 }
-  }
-
-  get(generation, index) {
-    var gen = this.cells[generation] || []
-    return gen[index] || { state: 0 }
-  }
-
   reset() {
     this.ctx.translate(0.5, 0.5)
     this.ctx.strokeStyle = "#a5a5a5"
+
+    this.ctx.beginPath();
 
     this.ctx.moveTo(this.coors.sx, this.coors.sy)
     this.ctx.lineTo(this.coors.ex, this.coors.sy)
