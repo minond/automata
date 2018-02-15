@@ -1,16 +1,13 @@
 class Dish {
-  constructor(elem) {
+  constructor(elem, fn) {
     var padding = 50
     var size = 600
-
-    // Rule 30
-    this.fn = (x, y, z) =>
-      x ^ y | z
 
     this.cells = []
     this.board = {}
     this.coors = {}
 
+    this.fn = fn
     this.ctx = elem.getContext("2d")
     this.elem = elem
     this.elem.width = size
@@ -21,6 +18,8 @@ class Dish {
     this.coors.sy = 100
     this.coors.ey = size - padding
 
+    this.board.gridColor = "#d5d5d5"
+    this.board.cellColor = "#5385ff"
     this.board.cellSize = 10
     this.board.rowWidth = (this.coors.ex - this.coors.sx) / this.board.cellSize
     this.board.rowHeight = (this.coors.ey - this.coors.sy) / this.board.cellSize
@@ -34,6 +33,10 @@ class Dish {
   }
 
   tick() {
+    if (this.cells.length >= this.board.rowHeight) {
+      return
+    }
+
     var curr = this.cells[this.cells.length - 1]
     var next = []
 
@@ -70,17 +73,22 @@ class Dish {
         if (this.get(gen, i).state === 1) {
           var sx = this.coors.sx + this.board.cellSize * i
           var sy = this.coors.sy + this.board.cellSize * gen
-          this.ctx.fillRect(sx, sy, this.board.cellSize, this.board.cellSize);
+          sy += this.board.cellSize * (this.board.rowHeight - gens)
+          this.ctx.fillStyle = this.board.cellColor
+          this.ctx.fillRect(sx, sy, this.board.cellSize, this.board.cellSize)
         }
       }
     }
   }
 
   reset() {
-    this.ctx.translate(0.5, 0.5)
-    this.ctx.strokeStyle = "#a5a5a5"
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0)
+    this.ctx.clearRect(0, 0, this.elem.width, this.elem.height)
 
-    this.ctx.beginPath();
+    this.ctx.translate(0.5, 0.5)
+    this.ctx.strokeStyle = this.board.gridColor
+
+    this.ctx.beginPath()
 
     this.ctx.moveTo(this.coors.sx, this.coors.sy)
     this.ctx.lineTo(this.coors.ex, this.coors.sy)
@@ -101,4 +109,23 @@ class Dish {
   }
 }
 
-var r30 = new Dish(document.querySelector("#canvas"))
+var Rules = {
+  3: [0, 0, 0, 0, 0, 0, 1, 1],
+  30: [1, 0, 0, 0, 0, 0, 0, 1],
+  129: [1, 0, 0, 0, 0, 0, 0, 1],
+
+  fn(n) {
+    return (x, y, z) => {
+      if (x & y & z) return Rules[n][0]
+      if (x & y) return Rules[n][1]
+      if (x & z) return Rules[n][2]
+      if (x) return Rules[n][3]
+      if (y & z) return Rules[n][4]
+      if (y) return Rules[n][5]
+      if (z) return Rules[n][6]
+      else return Rules[n][7]
+    }
+  }
+}
+
+new Dish(document.querySelector("#canvas"), Rules.fn(3))
