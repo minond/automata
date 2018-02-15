@@ -40,7 +40,7 @@ class Dish {
     var curr = this.cells[this.cells.length - 1]
     var next = []
 
-    for (var i = 1; i < this.board.rowWidth - 1; i++) {
+    for (var i = 0; i < this.board.rowWidth; i++) {
       var x = this.pick(curr, i - 1)
       var y = this.pick(curr, i)
       var z = this.pick(curr, i + 1)
@@ -57,7 +57,8 @@ class Dish {
   }
 
   pick(list, index) {
-    return list[index] || { state: 0 }
+    var len = this.board.rowWidth
+    return list[index < 0 ? len - index : index % len] || { state: 0 }
   }
 
   get(generation, index) {
@@ -128,4 +129,4 @@ var Rules = {
   }
 }
 
-new Dish(document.querySelector("#canvas"), Rules.fn(3))
+new Dish(document.querySelector("#canvas"), Rules.fn(129))
