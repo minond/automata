@@ -111,8 +111,13 @@ class Dish {
 }
 
 var Rules = {
+  0: [0, 0, 0, 0, 0, 0, 0, 0],
+  1: [0, 0, 0, 0, 0, 0, 0, 1],
+  2: [0, 0, 0, 0, 0, 0, 1, 0],
   3: [0, 0, 0, 0, 0, 0, 1, 1],
   30: [1, 0, 0, 0, 0, 0, 0, 1],
+  57: [0, 0, 1, 1, 1, 0, 0, 1],
+  124: [0, 1, 1, 1, 1, 1, 0, 0],
   129: [1, 0, 0, 0, 0, 0, 0, 1],
 
   fn(n) {
@@ -129,4 +134,4 @@ var Rules = {
   }
 }
 
-new Dish(document.querySelector("#canvas"), Rules.fn(129))
+new Dish(document.querySelector("#canvas"), Rules.fn(57))
