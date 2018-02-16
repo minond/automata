@@ -127,7 +127,11 @@ class Dish {
     this.ctx.lineTo(this.board.sx, this.board.sy)
 
     for (var x = this.board.sx; x < this.board.ex; x += this.config.cellSize) {
-      for (var y = this.board.sy; y < this.board.ey; y += this.config.cellSize) {
+      for (
+        var y = this.board.sy;
+        y < this.board.ey;
+        y += this.config.cellSize
+      ) {
         this.ctx.moveTo(x, y)
         this.ctx.lineTo(x, this.board.ey)
         this.ctx.moveTo(x, y)
@@ -144,22 +148,38 @@ var Rules = {
   1: [0, 0, 0, 0, 0, 0, 0, 1],
   2: [0, 0, 0, 0, 0, 0, 1, 0],
   3: [0, 0, 0, 0, 0, 0, 1, 1],
+  4: [0, 0, 0, 0, 0, 1, 0, 0],
+  7: [0, 0, 0, 0, 0, 1, 1, 1],
+  12: [0, 0, 0, 0, 1, 1, 0, 0],
+  14: [0, 0, 0, 0, 1, 1, 1, 0],
+  15: [0, 0, 0, 0, 1, 1, 1, 1],
+  18: [0, 0, 0, 1, 0, 0, 1, 0],
+  22: [0, 0, 0, 1, 0, 1, 1, 0],
   30: [0, 0, 0, 1, 1, 1, 1, 0],
+  32: [0, 0, 1, 0, 0, 0, 0, 0],
+  41: [0, 0, 1, 0, 1, 0, 0, 1],
+  45: [0, 0, 1, 0, 1, 1, 0, 1],
+  48: [0, 0, 1, 1, 0, 0, 0, 0],
+  50: [0, 0, 1, 1, 0, 0, 1, 0],
+  51: [0, 0, 1, 1, 0, 0, 1, 1],
+  54: [0, 0, 1, 1, 0, 1, 1, 0],
+  56: [0, 0, 1, 1, 1, 0, 0, 0],
   57: [0, 0, 1, 1, 1, 0, 0, 1],
-  124: [0, 1, 1, 1, 1, 1, 0, 0],
-  129: [1, 0, 0, 0, 0, 0, 0, 1],
 
-  fn(n) {
-    return (x, y, z) => {
-      if (x & y & z) return Rules[n][0]
-      if (x & y) return Rules[n][1]
-      if (x & z) return Rules[n][2]
-      if (x) return Rules[n][3]
-      if (y & z) return Rules[n][4]
-      if (y) return Rules[n][5]
-      if (z) return Rules[n][6]
-      else return Rules[n][7]
-    }
+  124: [0, 1, 1, 1, 1, 1, 0, 0],
+  129: [1, 0, 0, 0, 0, 0, 0, 1]
+}
+
+function fn(n) {
+  return (x, y, z) => {
+    if (x & y & z) return Rules[n][0]
+    if (x & y) return Rules[n][1]
+    if (x & z) return Rules[n][2]
+    if (x) return Rules[n][3]
+    if (y & z) return Rules[n][4]
+    if (y) return Rules[n][5]
+    if (z) return Rules[n][6]
+    else return Rules[n][7]
   }
 }
 
@@ -173,7 +193,7 @@ function show(rule) {
   }
 
   document.body.appendChild(canvas)
-  return new Dish(canvas, Rules.fn(rule), config)
+  return new Dish(canvas, fn(rule), config)
 }
 
-;[0, 1, 2, 3, 30, 57, 124, 129].map(show)
+Object.keys(Rules).map(show)
