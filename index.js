@@ -1,40 +1,43 @@
 class Dish {
-  constructor(elem, fn) {
-    var padding = 50
-    var size = 600
-
+  constructor(elem, fn, config) {
     this.cells = []
     this.board = {}
     this.coors = {}
 
+    this.config = Object.assign({ continues: false }, config || {})
+
     this.fn = fn
     this.ctx = elem.getContext("2d")
     this.elem = elem
-    this.elem.width = size
-    this.elem.height = size
-
-    this.coors.sx = padding
-    this.coors.ex = size - padding
-    this.coors.sy = 100
-    this.coors.ey = size - padding
+    this.elem.width = 600
+    this.elem.height = 600
 
     this.board.gridColor = "#d5d5d5"
     this.board.cellColor = "#5385ff"
     this.board.cellSize = 10
-    this.board.rowWidth = (this.coors.ex - this.coors.sx) / this.board.cellSize
-    this.board.rowHeight = (this.coors.ey - this.coors.sy) / this.board.cellSize
+    this.board.padding = 10
 
+    this.calculate()
     this.populate()
 
-    setInterval(() => {
+    let step = () => {
       this.draw()
-      this.tick()
-    }, 500)
+
+      if (this.tick() !== false) {
+        window.requestAnimationFrame(step)
+      }
+    }
+
+    window.requestAnimationFrame(step)
   }
 
   tick() {
     if (this.cells.length >= this.board.rowHeight) {
-      return
+      if (this.config.continues) {
+        this.cells.shift()
+      } else {
+        return false
+      }
     }
 
     var curr = this.cells[this.cells.length - 1]
@@ -48,6 +51,16 @@ class Dish {
     }
 
     this.cells.push(next)
+  }
+
+  calculate() {
+    this.coors.sx = this.board.padding
+    this.coors.ex = this.elem.width - this.board.padding
+    this.coors.sy = 100
+    this.coors.ey = this.elem.height - this.board.padding
+
+    this.board.rowWidth = (this.coors.ex - this.coors.sx) / this.board.cellSize
+    this.board.rowHeight = (this.coors.ey - this.coors.sy) / this.board.cellSize
   }
 
   populate() {
@@ -90,15 +103,15 @@ class Dish {
     this.ctx.strokeStyle = this.board.gridColor
 
     this.ctx.beginPath()
-
     this.ctx.moveTo(this.coors.sx, this.coors.sy)
+
     this.ctx.lineTo(this.coors.ex, this.coors.sy)
     this.ctx.lineTo(this.coors.ex, this.coors.ey)
     this.ctx.lineTo(this.coors.sx, this.coors.ey)
     this.ctx.lineTo(this.coors.sx, this.coors.sy)
 
     for (var x = this.coors.sx; x < this.coors.ex; x += this.board.cellSize) {
-      for (var y = this.coors.sy; y < this.coors.ex; y += this.board.cellSize) {
+      for (var y = this.coors.sy; y < this.coors.ey; y += this.board.cellSize) {
         this.ctx.moveTo(x, y)
         this.ctx.lineTo(x, this.coors.ey)
         this.ctx.moveTo(x, y)
@@ -134,4 +147,4 @@ var Rules = {
   }
 }
 
-new Dish(document.querySelector("#canvas"), Rules.fn(57))
+var d = new Dish(document.querySelector("#canvas"), Rules.fn(129))
