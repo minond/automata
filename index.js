@@ -1,21 +1,28 @@
 class Dish {
   constructor(elem, fn, config) {
+    var def = {
+      label: "unknown",
+      continues: false,
+      height: 200,
+      width: 400,
+      fontStyle: "monospace",
+      fontSize: 14,
+      gridColor: "#d5d5d5",
+      textColor: "black",
+      cellColor: "#5385ff",
+      cellSize: 5,
+      padding: 10
+    }
+
     this.cells = []
     this.board = {}
-    this.coors = {}
-
-    this.config = Object.assign({ continues: false }, config || {})
+    this.config = Object.assign(def, config || {})
 
     this.fn = fn
     this.ctx = elem.getContext("2d")
     this.elem = elem
-    this.elem.width = 300
-    this.elem.height = 300
-
-    this.board.gridColor = "#d5d5d5"
-    this.board.cellColor = "#5385ff"
-    this.board.cellSize = 5
-    this.board.padding = 10
+    this.elem.width = this.config.width
+    this.elem.height = this.config.height
 
     this.calculate()
     this.populate()
@@ -43,7 +50,7 @@ class Dish {
     var curr = this.cells[this.cells.length - 1]
     var next = []
 
-    for (var i = 0; i < this.board.rowWidth; i++) {
+    for (var i = 0; i < this.board.rowWidth * 1.1; i++) {
       var x = this.pick(curr, i - 1)
       var y = this.pick(curr, i)
       var z = this.pick(curr, i + 1)
@@ -54,13 +61,18 @@ class Dish {
   }
 
   calculate() {
-    this.coors.sx = this.board.padding
-    this.coors.ex = this.elem.width - this.board.padding
-    this.coors.sy = this.board.padding
-    this.coors.ey = this.elem.height - this.board.padding
+    this.board.sx = this.config.padding
+    this.board.ex = this.elem.width - this.config.padding
+    this.board.sy = 2 * this.config.padding + this.config.fontSize
+    this.board.ey = this.elem.height - this.config.padding
 
-    this.board.rowWidth = (this.coors.ex - this.coors.sx) / this.board.cellSize
-    this.board.rowHeight = (this.coors.ey - this.coors.sy) / this.board.cellSize
+    this.board.rowWidth = Math.floor(
+      (this.board.ex - this.board.sx) / this.config.cellSize
+    )
+
+    this.board.rowHeight = Math.floor(
+      (this.board.ey - this.board.sy) / this.config.cellSize
+    )
   }
 
   populate() {
@@ -85,11 +97,11 @@ class Dish {
     for (var gen = 0, gens = this.cells.length; gen < gens; gen++) {
       for (var i = 0; i < this.board.rowWidth; i++) {
         if (this.get(gen, i).state === 1) {
-          var sx = this.coors.sx + this.board.cellSize * i
-          var sy = this.coors.sy + this.board.cellSize * gen
-          sy += this.board.cellSize * (this.board.rowHeight - gens)
-          this.ctx.fillStyle = this.board.cellColor
-          this.ctx.fillRect(sx, sy, this.board.cellSize, this.board.cellSize)
+          var sx = this.board.sx + this.config.cellSize * i
+          var sy = this.board.sy + this.config.cellSize * gen
+          sy += this.config.cellSize * (this.board.rowHeight - gens)
+          this.ctx.fillStyle = this.config.cellColor
+          this.ctx.fillRect(sx, sy, this.config.cellSize, this.config.cellSize)
         }
       }
     }
@@ -100,22 +112,26 @@ class Dish {
     this.ctx.clearRect(0, 0, this.elem.width, this.elem.height)
 
     this.ctx.translate(0.5, 0.5)
-    this.ctx.strokeStyle = this.board.gridColor
+    this.ctx.fillStyle = this.config.textColor
+    this.ctx.font = this.config.fontSize + "px " + this.config.fontStyle
+    this.ctx.fillText(this.config.label, this.board.sx, 20)
+
+    this.ctx.strokeStyle = this.config.gridColor
 
     this.ctx.beginPath()
-    this.ctx.moveTo(this.coors.sx, this.coors.sy)
+    this.ctx.moveTo(this.board.sx, this.board.sy)
 
-    this.ctx.lineTo(this.coors.ex, this.coors.sy)
-    this.ctx.lineTo(this.coors.ex, this.coors.ey)
-    this.ctx.lineTo(this.coors.sx, this.coors.ey)
-    this.ctx.lineTo(this.coors.sx, this.coors.sy)
+    this.ctx.lineTo(this.board.ex, this.board.sy)
+    this.ctx.lineTo(this.board.ex, this.board.ey)
+    this.ctx.lineTo(this.board.sx, this.board.ey)
+    this.ctx.lineTo(this.board.sx, this.board.sy)
 
-    for (var x = this.coors.sx; x < this.coors.ex; x += this.board.cellSize) {
-      for (var y = this.coors.sy; y < this.coors.ey; y += this.board.cellSize) {
+    for (var x = this.board.sx; x < this.board.ex; x += this.config.cellSize) {
+      for (var y = this.board.sy; y < this.board.ey; y += this.config.cellSize) {
         this.ctx.moveTo(x, y)
-        this.ctx.lineTo(x, this.coors.ey)
+        this.ctx.lineTo(x, this.board.ey)
         this.ctx.moveTo(x, y)
-        this.ctx.lineTo(this.coors.ex, y)
+        this.ctx.lineTo(this.board.ex, y)
       }
     }
 
@@ -128,7 +144,7 @@ var Rules = {
   1: [0, 0, 0, 0, 0, 0, 0, 1],
   2: [0, 0, 0, 0, 0, 0, 1, 0],
   3: [0, 0, 0, 0, 0, 0, 1, 1],
-  30: [1, 0, 0, 0, 0, 0, 0, 1],
+  30: [0, 0, 0, 1, 1, 1, 1, 0],
   57: [0, 0, 1, 1, 1, 0, 0, 1],
   124: [0, 1, 1, 1, 1, 1, 0, 0],
   129: [1, 0, 0, 0, 0, 0, 0, 1],
@@ -148,13 +164,16 @@ var Rules = {
 }
 
 function show(rule) {
-  var c = document.createElement("canvas")
-  document.body.appendChild(c)
-  return new Dish(c, Rules.fn(rule))
+  var canvas = document.createElement("canvas")
+  var config = {
+    label: "Rule #" + rule,
+    continues: 0,
+    width: 400,
+    height: 200
+  }
+
+  document.body.appendChild(canvas)
+  return new Dish(canvas, Rules.fn(rule), config)
 }
 
-function shows(rules) {
-  return rules.map(show)
-}
-
-shows([0, 1, 2, 3, 30, 57, 124, 129])
+;[0, 1, 2, 3, 30, 57, 124, 129].map(show)
