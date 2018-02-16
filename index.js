@@ -9,12 +9,12 @@ class Dish {
     this.fn = fn
     this.ctx = elem.getContext("2d")
     this.elem = elem
-    this.elem.width = 600
-    this.elem.height = 600
+    this.elem.width = 300
+    this.elem.height = 300
 
     this.board.gridColor = "#d5d5d5"
     this.board.cellColor = "#5385ff"
-    this.board.cellSize = 10
+    this.board.cellSize = 5
     this.board.padding = 10
 
     this.calculate()
@@ -147,4 +147,14 @@ var Rules = {
   }
 }
 
-var d = new Dish(document.querySelector("#canvas"), Rules.fn(57))
+function show(rule) {
+  var c = document.createElement("canvas")
+  document.body.appendChild(c)
+  return new Dish(c, Rules.fn(rule))
+}
+
+function shows(rules) {
+  return rules.map(show)
+}
+
+shows([0, 1, 2, 3, 30, 57, 124, 129])
