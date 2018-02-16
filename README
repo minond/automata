@@ -1,7 +1,8 @@
-Right now I'm just playing around with CA and implementing Stephen Wolfram's one-dimensional definitions. I'd like this to really turn into a project where I'm defining and visualizing my own 3d automata.
+This is still a work in progress. Right now I'm just playing around with CA and implementing Stephen Wolfram's one-dimensional definitions. I'd like this to really turn into a project where I'm defining and visualizing my own 3d automata.
 
 Resources:
 
+- http://atlas.wolfram.com/TOC/TOC_101.html
 - http://atlas.wolfram.com/01/01/
 - https://en.wikipedia.org/wiki/Cellular_automaton
 - https://en.wikipedia.org/wiki/Cellular_automaton#Classification
