@@ -56,7 +56,7 @@ class Dish {
   calculate() {
     this.coors.sx = this.board.padding
     this.coors.ex = this.elem.width - this.board.padding
-    this.coors.sy = 100
+    this.coors.sy = this.board.padding
     this.coors.ey = this.elem.height - this.board.padding
 
     this.board.rowWidth = (this.coors.ex - this.coors.sx) / this.board.cellSize
