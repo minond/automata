@@ -54,7 +54,7 @@ class Dish {
       var x = this.pick(curr, i - 1)
       var y = this.pick(curr, i)
       var z = this.pick(curr, i + 1)
-      next[i] = { state: this.fn(x.state, y.state, z.state) }
+      next[i] = this.fn(x.state, y.state, z.state)
     }
 
     this.cells.push(next)
@@ -78,7 +78,10 @@ class Dish {
   populate() {
     var zero = this.board.rowWidth / 2 - 1
     this.cells = [[]]
-    this.cells[0][zero] = { state: 1 }
+    this.cells[0][zero] = {
+      color: this.config.cellColor,
+      state: 1
+    }
   }
 
   pick(list, index) {
@@ -100,7 +103,7 @@ class Dish {
           var sx = this.board.sx + this.config.cellSize * i
           var sy = this.board.sy + this.config.cellSize * gen
           sy += this.config.cellSize * (this.board.rowHeight - gens)
-          this.ctx.fillStyle = this.config.cellColor
+          this.ctx.fillStyle = this.get(gen, i).color
           this.ctx.fillRect(sx, sy, this.config.cellSize, this.config.cellSize)
         }
       }
@@ -214,14 +217,14 @@ var Rules = {
 
 function fn(n) {
   return (x, y, z) => {
-    if (x & y & z) return Rules[n][0]
-    if (x & y) return Rules[n][1]
-    if (x & z) return Rules[n][2]
-    if (x) return Rules[n][3]
-    if (y & z) return Rules[n][4]
-    if (y) return Rules[n][5]
-    if (z) return Rules[n][6]
-    else return Rules[n][7]
+    if (x & y & z) return { state: Rules[n][0], color: "#eef9fe" }
+    if (x & y) return { state: Rules[n][1], color: "#edecf6" }
+    if (x & z) return { state: Rules[n][2], color: "#fef5f9" }
+    if (x) return { state: Rules[n][3], color: "#81a9bd" }
+    if (y & z) return { state: Rules[n][4], color: "#95a2b5" }
+    if (y) return { state: Rules[n][5], color: "#a99bae" }
+    if (z) return { state: Rules[n][6], color: "#b991a5" }
+    else return { state: Rules[n][7], color: "#5385ff" }
   }
 }
 
