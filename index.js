@@ -147,4 +147,4 @@ var Rules = {
   }
 }
 
-var d = new Dish(document.querySelector("#canvas"), Rules.fn(129))
+var d = new Dish(document.querySelector("#canvas"), Rules.fn(57))
